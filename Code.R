@@ -1,24 +1,33 @@
 
-install.packages(c("tidyverse","dslabs"))  ## instalar más de un paquete, los nombres de packetes entre comillas
+install.packages(c("tidyverse","dslabs"))  ## instalar m?s de un paquete, los nombres de packetes entre comillas
 installed.packages() ## ver todos los paquetes instalados
 
 
 ## ejercicios de operaciones
 
-a<-2
-b<--1
-c<--4
+a<-1
+b<-1
+c<--1
 ls()# lista los objetos
+
 sol_1<-(-b + sqrt(b^2 - 4*a*c))/(2*a)
 print(sol_1)
 sol_2<-(-b - sqrt(b^2 - 4*a*c) ) / ( 2*a )
 print(sol_2)
 
+
+
+save.image("Objetos") ## Save objects in workspace
+
 ls() #all variables saved in workspace
 rm() ##borra objetos determinados
 rm(list = ls())## borra todos los objetos
 
-help("log") ## función de ayuda
+load("Objetos") ## carga los objetos guardados
+
+
+
+help("log") ## funci?n de ayuda
 ?log
 args(log)  ## vistazo a los argumentos
 
@@ -27,35 +36,48 @@ log(8, base = 2) ## cambiando default
 log(8,2) ## R sabe el lugar de los argumentos
 log(base=2, x=8) ## al colocar los nombres de los argumentos, no importa el orden
 
-data() ## lista los datasets
+
+## Prebuilt objects
+data() ## lista los datasets disponibles
 co2 ## ejemplo de objeto dataset
+pi ## prebuilt objects
 
 class()#determinar el tipo de objeto
 class(co2)  #objeto tipo serie temporal
 
 #ejemplo data.frame
 
-library(dslabs) ## carga librería con los datos del libro
+library(dslabs) ## carga libreria con los datos del libro
 data("murders") ## carga el dataset que buscamos
 class(murders)
-str(murders) ## estructura del objeto
+str(murders) ## examinar estructura del objeto
 head(murders)
 names(murders)
 pop<-murders$population 
 length(pop)
 class(pop)
+class(as.integer(pop)) ##convierte a enteros
 
+class(murders$state)
+
+
+z<-3==2
+print(z)
+class(z)
+?Comparison  ## relational operators
 
 #Example of factor
 region<-murders$region
 class(region)
 levels(region)
-table(murders$region)
+table(murders$region) #cuantos estados por region
 value<-murders$total
-region<-reorder(region,value, FUN = sum) #reordenar un factor dado un estadístico
+region<-reorder(region,value, FUN = sum) #reordenar un factor dado un estadistico
 levels(region)
+length(levels(murders$region)) ## numero de regiones
 
-## funcion concatenar - vector  asignación de nombres
+
+## funcion concatenar - vector  asignacion de nombres
 
 temp<-c(35, 88, 42, 84, 81, 30)
 city<-c("Beijing", "Lagos", "Paris", "Rio de Janeiro", "San Juan", "Toronto")
@@ -63,19 +85,34 @@ names(temp)<-city #asignar nombres al verctor
 temp[1:3]
 temp[c("Paris","San Juan")]
 
-# secuancias
+# secuencias
 
 12:73
 seq(1,99,2)
-a <- seq(1, 10, 0.5)
-class(a)  # numeric
 a <- seq(1, 10)
-class(a)
+class(a) # por default son enteros
+a <- seq(1, 10, 0.5) #if we create a sequence including non-integers, the class changes:
+class(a)  # numeric
+length(seq(6,54,4/7))
 
+
+## cohersion
 x <- c("1", "3", "5")
-class(x) # interger
+class(x) # character
 x<-as.numeric(x)
 class(x)
+
+
+#Ejercicio
+str(murders)
+a<-murders$abb
+class(a)
+head(a)
+b<-murders[["abb"]] ## otra forma de acceder a los componentes de murders
+class(b)
+head(b)
+identical(a,b) ## are they identical?
+
 
 #  ordenar
 
@@ -84,9 +121,9 @@ data("murders")
 
 pop<-murders$population
 pops<-sort(pop) #ordena de menor a mayor
-pops[1]  ## menor población
+pops[1]  ## menor poblaci?n
 ind<-order(pop)  #indices de menor a mayor
-ind[1] ## índice de la menor población
+ind[1] ## ?ndice de la menor poblaci?n
 which.min(pop) ## forma directa
 murders$state[51]  ## state with the smallest population
 
@@ -94,7 +131,7 @@ sort(murders$total)  # ordena los valores, sin embargo no me da los estados que 
 index<-order(murders$total)
 murders$state[index]
 max(murders$total)
-i_max<-which.max(murders$total) #índice en el que se encuentra el máximo
+i_max<-which.max(murders$total) #?ndice en el que se encuentra el m?ximo
 i_max
 murders$state[i_max]
 
@@ -131,11 +168,11 @@ library(dslabs)
 data(murders)
 str(murders)
 murder_rate<-murders$total/murders$population*100000
-murders$state[which.min(murder_rate)] #Estado con mínima tasa
-murders$state[which.max(murder_rate)] #Estado con la máxima tasa
+murders$state[which.min(murder_rate)] #Estado con m?nima tasa
+murders$state[which.max(murder_rate)] #Estado con la m?xima tasa
 low<-murder_rate<1
-which(low) #los índices que cumplen la condición previa
-sum(low) # núero de estados de cumplen esta condición
+which(low) #los ?ndices que cumplen la condici?n previa
+sum(low) # n?ero de estados de cumplen esta condici?n
 murders$state[low]
 zone<-murders$region=="Northeast"
 index<-low & zone
@@ -145,7 +182,7 @@ mean(murder_rate)
 murders$state[murder_rate<mean(murder_rate)]
 sum(murder_rate<mean(murder_rate))
 
-ind<-match(c("AK", "MI", "IA"), murders$abb) #Índices que tienen las abreviaciones
+ind<-match(c("AK", "MI", "IA"), murders$abb) #?ndices que tienen las abreviaciones
 murders$state[ind]
 
 
@@ -158,9 +195,7 @@ which(sol)
 
 ## ********************Uso de comandos dplyr
 
-data("co2")
-str(co2)
-data("ChickWeight")
+
 
 library(dplyr)
 library(dslabs)
@@ -177,11 +212,11 @@ murders<-mutate(murders, ranking=rank(-rate)) #the minus sign gives you the rank
 
 select(murders, state, population) %>% head()
 
-filter(murders, ranking <=5) # ranking de las 5 más altas tasas
+filter(murders, ranking <=5) # ranking de las 5 m?s altas tasas
 
 no_florida <- filter(murders, state != "Florida") ## todos excepto florida
 
-no_south<-filter(murders, region!="South") # todos excepto la región South
+no_south<-filter(murders, region!="South") # todos excepto la regi?n South
 nrow(no_south)
 
 murders_nw<-filter(murders, region %in% c("Northeast", "West"))
@@ -245,8 +280,8 @@ heights$sex[1032]
 maximo<-max(heights$height)
 minimo<-min(heights$height)
 x<-50:82
-sol<-match(x, heights$height) # vector de índices
-!x%in%heights$height ## vector lógico de los que no están
+sol<-match(x, heights$height) # vector de ?ndices
+!x%in%heights$height ## vector l?gico de los que no est?n
 sum(!x%in%heights$height)
 
 heights<-mutate(heights, heigh_cm=height*2.54)
@@ -272,7 +307,7 @@ sum(new)
 new<-ifelse(heights$height>72,heights$height,0)
 mean(new)
 
-#función de pulgadas a pies
+#funci?n de pulgadas a pies
 inches_to_ft<-function(x){
   x/12
 }
@@ -313,7 +348,7 @@ library(dplyr)
 library(dslabs)
 data(heights)
 
-# media y desviación estándar
+# media y desviaci?n est?ndar
 
 s <- heights %>% 
   filter(sex == "Female") %>%
@@ -325,7 +360,7 @@ s$average
 s$standard_deviation
 
 
-# estadísticos de orden
+# estad?sticos de orden
 heights %>% 
   filter(sex == "Female") %>%
   summarize(median = median(height), minimum = min(height), 
@@ -351,7 +386,7 @@ ref_avg <- NHANES %>%
   summarize(ref_avg = mean(BPSysAve, na.rm = TRUE), 
             standard_deviation = sd(BPSysAve, na.rm=TRUE))%>%.$ref_avg
 
-#mínimo y máximo
+#m?nimo y m?ximo
 NHANES %>%
   filter(AgeDecade == " 20-29"& Gender == "female") %>%summarize(minbp = min(BPSysAve, na.rm = TRUE), maxbp = max(BPSysAve, na.rm=TRUE))
 
